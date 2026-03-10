@@ -1,34 +1,23 @@
-# FashionStar与Piper机械臂集成控制
+# PiPER Mate与Piper机械臂集成控制
 
-本项目实现了FashionStar机械臂与Piper机械臂的集成控制，通过USB和CAN总线实现实时遥操作。
+本项目实现了PiPER Mate机械臂与Piper机械臂的集成控制，通过USB和CAN总线实现实时遥操作。
 
 ## 项目概述
 
-该项目允许用户使用FashionStar机械臂作为主控设备，实时控制Piper机械臂的运动。系统通过读取FashionStar机械臂的关节状态，并将其转换为Piper机械臂的控制指令，实现精确的遥操作功能。
+该项目允许用户使用PiPER Mate机械臂作为主控设备，实时控制Piper机械臂的运动。系统通过读取PiPER Mate机械臂的关节状态，并将其转换为Piper机械臂的控制指令，实现精确的遥操作功能。
 
 ## 功能特性
 
 - **实时遥操作**：支持高控制频率
-- **关节映射**：自动将FashionStar关节角度转换为Piper关节位置
+- **关节映射**：自动将PiPER Mate关节角度转换为Piper关节位置
 - **安全保护**：包含关节角度限制和力矩控制
 - **夹爪控制**：可选夹爪控制功能
-
-## 项目结构
-
-```bash
-fashionstar_agilex/
-├── fashionstar_agilex.py     # 主控制程序
-├── can_activate.sh           # 单CAN设备激活脚本
-├── can_config.sh             # CAN设备配置脚本
-├── can_muti_activate.sh      # 多CAN设备激活脚本
-└── find_all_can_port.sh      # CAN端口检测脚本
-```
 
 ## 系统要求
 
 ### 硬件要求
 
-- FashionStar机械臂（通过USB连接）
+- PiPER Mate机械臂（通过USB连接）
 - Piper机械臂（通过CAN总线连接）
 - CAN转USB适配器
 - Linux系统（推荐Ubuntu 22.04+）
@@ -41,7 +30,7 @@ sudo apt update
 sudo apt install ethtool can-utils
 
 # Python依赖
-sudo pip install serial fashionstar-uart-sdk piper-sdk python-can scipy
+sudo pip install pyserial fashionstar-uart-sdk piper-sdk python-can scipy
 ```
 
 ## 快速开始
@@ -60,16 +49,16 @@ bash can_activate.sh can0 1000000
 ### 2. 运行主程序
 
 ```bash
-python3 ./Python_SDK/fashionstar_agilex.py
+python3 ./Python_SDK/piper_pipermate.py
 ```
 
 ### 3. 参数配置
 
-在 `fashionstar_agilex.py` 的 `main()` 函数中修改以下参数：
+在 `piper_pipermate.py` 的 `main()` 函数中修改以下参数：
 
 ```python
-# FashionStar USB端口
-FASHIONSTAR_PORT = "/dev/ttyUSB0"
+# PiPER Mate USB端口
+PIPERMATE_PORT = "/dev/ttyUSB0"
 
 # Piper CAN端口
 PIPER_CAN_NAME = "can0"
@@ -156,7 +145,7 @@ CAN端口检测脚本，用于：
 2. **权限不足**
    - 使用 `sudo chmod 777 /dev/ttyUSB*` 后运行脚本
 
-3. **FashionStar连接失败**
+3. **PiPER Mate连接失败**
    - 检查USB端口号
    - 确认FashionStar SDK安装正确
    - 检查设备权限
@@ -173,7 +162,7 @@ CAN端口检测脚本，用于：
 
 1. **操作前检查**：确保机械臂周围无障碍物
 2. **紧急停止**：按Ctrl+C可立即停止程序
-3. **力矩控制**：默认禁用FashionStar力矩
+3. **力矩控制**：默认禁用PiPER Mate力矩
 4. **关节限制**：系统自动限制关节角度在安全范围内
 
 ## 许可证

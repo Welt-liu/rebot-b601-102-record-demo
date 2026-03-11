@@ -9,6 +9,7 @@ import time
 import serial
 import argparse
 from typing import List, Optional
+from DM_CAN import *
 
 # 导入PiPER_Mate SDK
 from fashionstar_uart_sdk.uart_pocket_handler import (
@@ -16,8 +17,7 @@ from fashionstar_uart_sdk.uart_pocket_handler import (
     SyncPositionControlOptions,
 )
 
-# 导入Piper SDK
-from piper_sdk import C_PiperInterface_V2
+
 
 
 class PiPER_MateAgilex:
@@ -28,21 +28,21 @@ class PiPER_MateAgilex:
     # Piper手臂关节角度限制（角度和弧度）
     JOINT_ANGLE_LIMITS = {
         'joint1': [-150.0, 150.0],      # 角度限制
-        'joint2': [0.0, 180.0],         
+        'joint2': [-180.0,0.0],         
         'joint3': [-170.0, 0.0],        
-        'joint4': [-100.0, 100.0],      
+        'joint4': [-100.0,0.0],      
         'joint5': [-70.0, 70.0],        
         'joint6': [-120.0, 120.0],      
     }
     
-    JOINT_RADIAN_LIMITS = {
-        'joint1': [-2.6179, 2.6179],    # 弧度限制
-        'joint2': [0, 3.14],            
-        'joint3': [-2.967, 0],          
-        'joint4': [-1.745, 1.745],      
-        'joint5': [-1.22, 1.22],        
-        'joint6': [-2.09439, 2.09439],  
-    }
+    # JOINT_RADIAN_LIMITS = {
+    #     'joint1': [-2.6179, 2.6179],    # 弧度限制
+    #     'joint2': [0, 3.14],            
+    #     'joint3': [-2.967, 0],          
+    #     'joint4': [-1.745, 1.745],      
+    #     'joint5': [-1.22, 1.22],        
+    #     'joint6': [-2.09439, 2.09439],  
+    # }
     
     def __init__(self, 
                  fashionstar_port: str = "/dev/ttyUSB0", 
@@ -84,21 +84,10 @@ class PiPER_MateAgilex:
             self.joint_names.append('gripper')
         
         # 初始化Piper机械臂
-        print(f"初始化Piper机械臂，CAN端口: {piper_can_name}")
-        try:
-            self.piper_interface = C_PiperInterface_V2.get_instance(
-                can_name=piper_can_name,
-                judge_flag=True,
-                can_auto_init=True
-            )
-            print("Piper机械臂接口初始化成功")
-        except Exception as e:
-            print(f"Piper机械臂接口初始化失败: {e}")
-            raise
+
         
         # 连接Piper机械臂
         try:
-            self.piper_interface.ConnectPort()
             print("Piper机械臂连接成功")
         except Exception as e:
             print(f"Piper机械臂连接失败: {e}")
@@ -142,9 +131,9 @@ class PiPER_MateAgilex:
         Returns:
             转换后的关节位置（弧度或米）
         """
-        if servo_id in range(6):  # 手臂关节
+        if servo_id in range(7):  # 手臂关节
             # 先对第1、4、6关节方向取反
-            if servo_id in [0, 3, 5]:  # joint1, joint4, joint6
+            if servo_id in [0,1,5]:  # joint1, joint4, joint6
                 servo_angle = -servo_angle
             
             # 根据关节名称获取角度限制
@@ -156,9 +145,7 @@ class PiPER_MateAgilex:
             
             # 转换为弧度
             return self.degrees_to_radians(limited_angle)
-        elif servo_id == 6:  # 夹爪
-            # 夹爪：将角度转换为米
-            return self.degrees_to_meters(servo_angle)
+
         else:
             return 0.0
     
@@ -230,14 +217,14 @@ class PiPER_MateAgilex:
                     joint_angles[5]   # joint6
                 )
             
-            # 控制Piper夹爪（如果存在）
-            if self.gripper_exist and 'gripper' in joint_states:
-                # 将夹爪位置（米）转换为Piper需要的单位（微米，0.001mm）
-                gripper_meters = joint_states['gripper']
-                gripper_micrometers = int(gripper_meters * 1000 * 1000)  # 米 -> 毫米 -> 微米
-                # 控制Piper夹爪
-                # 参数：夹爪距离(微米), 夹爪力矩(0.001N/m), 控制码(0x01启用), 设置零点(0不设置)
-                self.piper_interface.GripperCtrl(gripper_micrometers, 1000, 0x01, 0)
+            # # 控制Piper夹爪（如果存在）
+            # if self.gripper_exist and 'gripper' in joint_states:
+            #     # 将夹爪位置（米）转换为Piper需要的单位（微米，0.001mm）
+            #     gripper_meters = joint_states['gripper']
+            #     gripper_micrometers = int(gripper_meters * 1000 * 1000)  # 米 -> 毫米 -> 微米
+            #     # 控制Piper夹爪
+            #     # 参数：夹爪距离(微米), 夹爪力矩(0.001N/m), 控制码(0x01启用), 设置零点(0不设置)
+            #     self.piper_interface.GripperCtrl(gripper_micrometers, 1000, 0x01, 0)
                 
         except Exception as e:
             print(f"控制Piper机械臂失败: {e}")
@@ -303,6 +290,57 @@ def main():
     GRIPPER_EXIST = True                 # 是否包含夹爪
     UPDATE_RATE = 100.0                  # 控制频率（Hz）- 可调节
 
+    Motor1=Motor(DM_Motor_Type.DM4310,0x01,0x11)
+    Motor2=Motor(DM_Motor_Type.DM4340,0x02,0x12)
+    Motor3=Motor(DM_Motor_Type.DM4340,0x03,0x13)
+    Motor4=Motor(DM_Motor_Type.DM4310,0x04,0x14)
+    Motor5=Motor(DM_Motor_Type.DM4310,0x05,0x15)
+    Motor6=Motor(DM_Motor_Type.DM4310,0x06,0x16)
+    # Motor7=Motor(DM_Motor_Type.DM4310,0x07,0x17)
+    serial_device = serial.Serial('/dev/ttyACM0', 921600, timeout=0.5)
+    MotorControl1=MotorControl(serial_device)
+    MotorControl1.addMotor(Motor1)
+    MotorControl1.addMotor(Motor2)
+    MotorControl1.addMotor(Motor3)
+    MotorControl1.addMotor(Motor4)
+    MotorControl1.addMotor(Motor5)
+    MotorControl1.addMotor(Motor6)
+    # MotorControl1.addMotor(Motor7)
+
+    if MotorControl1.switchControlMode(Motor1,Control_Type.POS_VEL):
+        print("switch POS_VEL success")
+    if MotorControl1.switchControlMode(Motor2,Control_Type.POS_VEL):
+        print("switch POS_VEL success")
+    if MotorControl1.switchControlMode(Motor3,Control_Type.POS_VEL):
+        print("switch POS_VEL success")
+    if MotorControl1.switchControlMode(Motor4,Control_Type.POS_VEL):
+        print("switch POS_VEL success")
+    if MotorControl1.switchControlMode(Motor5,Control_Type.POS_VEL):
+        print("switch POS_VEL success")
+    if MotorControl1.switchControlMode(Motor6,Control_Type.POS_VEL):
+        print("switch POS_VEL success")
+    # if MotorControl1.switchControlMode(Motor7,Control_Type.POS_VEL):
+    #     print("switch POS_VEL success")
+
+
+
+
+
+    MotorControl1.save_motor_param(Motor1)
+    MotorControl1.save_motor_param(Motor2)
+    MotorControl1.save_motor_param(Motor3)
+    MotorControl1.save_motor_param(Motor4)
+    MotorControl1.save_motor_param(Motor5)
+    MotorControl1.save_motor_param(Motor6)
+    # MotorControl1.save_motor_param(Motor7)
+    MotorControl1.enable(Motor1)
+    MotorControl1.enable(Motor2)
+    MotorControl1.enable(Motor3)
+    MotorControl1.enable(Motor4)
+    MotorControl1.enable(Motor5)
+    MotorControl1.enable(Motor6)
+    # MotorControl1.enable(Motor7)
+
     robot_controller = None
     try:
         # 创建机械臂控制器
@@ -327,8 +365,15 @@ def main():
                 
                 if joint_states:
                     # 控制Piper机械臂
-                    robot_controller.control_piper_joints(joint_states)
                     
+                    # MotorControl1.control_Pos_Vel(Motor1,joint_states["joint1"],10)
+                    MotorControl1.control_Pos_Vel(Motor2,joint_states["joint2"],10)
+                    MotorControl1.control_Pos_Vel(Motor3,joint_states["joint3"],10)
+                    MotorControl1.control_Pos_Vel(Motor4,joint_states["joint4"],10)
+                    MotorControl1.control_Pos_Vel(Motor5,joint_states["joint5"],10)
+                    MotorControl1.control_Pos_Vel(Motor6,joint_states["joint6"],10)
+                    # MotorControl1.control_Pos_Vel(Motor7,joint_states["gripper"],30)
+
                     # 实时显示关节状态（每10帧显示一次，避免刷屏）
                     frame_count += 1
                     if frame_count % 10 == 0:

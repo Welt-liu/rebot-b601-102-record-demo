@@ -12,8 +12,8 @@
 
 ## 注意
 
-1.当夹爪跳齿后，设置最小值为0点，默认最大行程值为-320（方向为负）
-2.1号关节pid调的很小，>50%行程运动可能会抖动
+1.当夹爪跳齿后，设置最小值为0点，默认最大行程值为-320（方向为负）  
+2.1号关节pid调的很小，>50%行程运动可能会抖动  
 3.pipermate_sdk.py可配置rebot的最大行程，夹爪和操控器的放缩比（必须为正）
 
 ---
@@ -25,8 +25,8 @@
 ### rebot设置
 
 
-1.全部关节电机设置控制模式为位置速度
-2.夹爪电机设置为MIT，或者直接改code
+1.全部关节电机设置控制模式为位置速度  
+2.夹爪电机设置为MIT，或者直接改code  
 3.MotorControl1.controlMIT(Motor7, 5, 1,joint_states["gripper"],1,0)
 
 
@@ -58,8 +58,7 @@ python3 ./Python_SDK/rebot_pipermate.py
 PiPER-Mate/
 ├── Python_SDK/                  # Python SDK控制方式
 │   ├── u2can/                   # 达秒驱动
-│   ├── rebot_pipermate.py       # 主控制程序
-│   └── README.md                # 详细使用文档
+│   └── rebot_pipermate.py       # 主控制程序
 └── README.md                    # 本文档
 
 ```
@@ -80,7 +79,7 @@ PiPER-Mate/
 ---
 
 ## ⚠️ 安全注意事项
-2. **急停控制**：程序运行时按 `Ctrl+C` 可立即停止
+**急停控制**：程序运行时按 `Ctrl+C` 可立即停止
 ---
 
 
@@ -121,14 +120,6 @@ sudo apt remove brltty
 ```
 
 ---
-
-## 📖 详细文档
-
-选择你需要的控制方式查看详细文档：
-
-- 📘 **[Python SDK 详细文档](./Python_SDK/README.md)** - 推荐！最简单易用
-- 📗 **[ROS2 HUMBLE 详细文档](./ROS2_HUMBLE/README.md)** - 适用于机器人系统集成
-- 📙 **[Lerobot 详细文档](./Lerobot/README.md)** - 适用于AI训练和研究
 
 ## 📄 许可证
 

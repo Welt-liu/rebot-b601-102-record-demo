@@ -24,7 +24,7 @@ def main():
     GRIPPER_EXIST = True                
     UPDATE_RATE = 80.0                  
 
-    Motor1=Motor(DM_Motor_Type.DM4310,0x01,0x11)
+    Motor1=Motor(DM_Motor_Type.DM4340,0x01,0x11)
     Motor2=Motor(DM_Motor_Type.DM4340,0x02,0x12)
     Motor3=Motor(DM_Motor_Type.DM4340,0x03,0x13)
     Motor4=Motor(DM_Motor_Type.DM4310,0x04,0x14)
@@ -75,8 +75,6 @@ def main():
                     # 控制Piper机械臂
                     
                     MotorControl1.control_Pos_Vel(Motor1,joint_states["joint1"],15)
-
-                    # MotorControl1.controlMIT(Motor1, 18, 1,joint_states["joint1"],1,0)
                     time.sleep(0.002)
                     MotorControl1.control_Pos_Vel(Motor2,joint_states["joint2"],15)
                     time.sleep(0.002)
@@ -89,7 +87,8 @@ def main():
                     MotorControl1.control_Pos_Vel(Motor6,joint_states["joint6"],15)
                     time.sleep(0.002)
                     # MotorControl1.control_Pos_Vel(Motor7,joint_states["gripper"],15)
-                    MotorControl1.controlMIT(Motor7, 5, 1,joint_states["gripper"],1,0)
+                    # MotorControl1.controlMIT(Motor7, 5, 1,joint_states["gripper"],1,0)
+                    MotorControl1.control_pos_force(Motor7,joint_states["gripper"],2000,350)#爪子 速度*100 百分比电流10000
                     time.sleep(0.002)
                     # 实时显示关节状态（每10帧显示一次，避免刷屏）
                     frame_count += 1

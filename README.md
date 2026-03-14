@@ -26,8 +26,8 @@
 
 
 1.全部关节电机设置控制模式为位置速度  
-2.夹爪电机设置为MIT，或者直接改code  
-3.MotorControl1.controlMIT(Motor7, 5, 1,joint_states["gripper"],1,0)
+2.夹爪电机设置为带电流限制的位控
+
 
 
 

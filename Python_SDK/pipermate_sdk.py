@@ -21,7 +21,7 @@ JOINT_ANGLE_LIMITS = {
     'joint1': [-150.0, 150.0],      # 角度限制
     'joint2': [-180.0,0.0],         
     'joint3': [-170.0, 0.0],        
-    'joint4': [-90.0,0.0],      #<--- 这个关节的0.0限位改大即可低头
+    'joint4': [-90.0,90.0],      #<--- 这个关节的0.0限位改大即可低头
     'joint5': [-70.0, 70.0],        
     'joint6': [-120.0, 120.0],   
     'gripper':[-320, 0],
@@ -137,6 +137,8 @@ class PiPER_MateAgilex:
         elif servo_id == 6:
             #对角度取反
             servo_angle = -servo_angle*GRIPPER_RATIO
+            if servo_angle > -14:
+                servo_angle = 0 
             
             # 根据关节名称获取角度限制
             joint_name = f'gripper'

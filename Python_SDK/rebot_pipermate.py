@@ -101,6 +101,7 @@ def main():
                 
             except KeyboardInterrupt:
                 print("\n\n用户手动停止遥操作")
+                MotorControl1.disable(Motor7)
                 MotorControl1.control_Pos_Vel(Motor1,0,1.5)
                 time.sleep(0.002)
                 MotorControl1.control_Pos_Vel(Motor2,0,1.5)

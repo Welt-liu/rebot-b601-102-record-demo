@@ -43,7 +43,13 @@ def main():
 
     motors = [Motor1, Motor2, Motor3, Motor4, Motor5, Motor6,Motor7]
 
+
     for motor in motors:
+        MotorControl1.disable(motor)
+        if motor != Motor7:
+            MotorControl1.switchControlMode(motor,Control_Type.POS_VEL)
+        else:
+            MotorControl1.switchControlMode(motor,Control_Type.Torque_Pos)
         MotorControl1.enable(motor)
         time.sleep(0.001)
 
@@ -86,7 +92,7 @@ def main():
                     time.sleep(0.002)
                     # MotorControl1.control_Pos_Vel(Motor7,joint_states["gripper"],15)
                     # MotorControl1.controlMIT(Motor7, 5, 1,joint_states["gripper"],1,0)
-                    MotorControl1.control_pos_force(Motor7,joint_states["gripper"],2000,350)#爪子 速度*100 百分比电流10000
+                    MotorControl1.control_pos_force(Motor7,joint_states["gripper"],2000,500)#爪子 速度*100 百分比电流10000
                     time.sleep(0.002)
                     # 实时显示关节状态（每10帧显示一次，避免刷屏）
                     frame_count += 1
